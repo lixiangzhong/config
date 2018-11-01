@@ -33,12 +33,10 @@ func Load(filename string) error {
 	return Viper.ReadInConfig()
 }
 
-func OnChange(f func() error) {
+func OnChange(f func()) {
 	Viper.WatchConfig()
 	Viper.OnConfigChange(func(fsnotify.Event) {
-		if err := f(); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-		}
+		f()
 	})
 }
 
