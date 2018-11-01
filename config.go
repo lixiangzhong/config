@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-sql-driver/mysql"
-	"github.com/spf13/cast"
+	"github.com/lixiangzhong/cast"
 	"github.com/spf13/viper"
 	"path/filepath"
 	"strings"
