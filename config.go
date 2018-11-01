@@ -87,7 +87,7 @@ func Duration(key string) time.Duration {
 }
 
 func Time(key string) time.Time {
-	return Viper.GetTime(key)
+	return cast.ToTime(Get(key))
 }
 
 func IntSlice(key string) []int {
