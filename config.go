@@ -1,7 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"github.com/fsnotify/fsnotify"
+	"github.com/go-sql-driver/mysql"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 	"path/filepath"
@@ -10,12 +12,8 @@ import (
 )
 
 var (
-	Viper *viper.Viper
-)
-
-func init() {
 	Viper = viper.New()
-}
+)
 
 func MustLoad(filename string) {
 	if err := Load(filename); err != nil {
@@ -104,4 +102,34 @@ func StringMapString(key string) map[string]string {
 
 func StringMapStringSlice(key string) map[string][]string {
 	return Viper.GetStringMapStringSlice(key)
+}
+
+func MySQLConfig(section string) *mysql.Config {
+	var cfg = mysql.NewConfig()
+	fields := []string{
+		"host", "addr",
+		"user", "username",
+		"password", "passwd",
+		"db", "dbname", "database",
+	}
+	for _, field := range fields {
+		key := fmt.Sprintf("%v.%v", section, field)
+		if Viper.IsSet(key) == false {
+			continue
+		}
+		switch field {
+		case "host", "addr":
+			cfg.Addr = String(key)
+		case "user", "username":
+			cfg.User = String(key)
+		case "passwd", "password":
+			cfg.Passwd = String(key)
+		case "db", "dbname", "database":
+			cfg.DBName = String(key)
+		}
+	}
+	cfg.Loc = time.Local
+	cfg.Net = "tcp"
+	cfg.ParseTime = true
+	return cfg
 }
