@@ -29,10 +29,12 @@ func Load(filename string) error {
 	return Viper.ReadInConfig()
 }
 
-func OnChange(f func()) {
+func WatchChange(funcs ...func()) {
 	Viper.WatchConfig()
 	Viper.OnConfigChange(func(fsnotify.Event) {
-		f()
+		for _, f := range funcs {
+			f()
+		}
 	})
 }
 
