@@ -25,9 +25,27 @@ func MustLoad(filename string) {
 func Load(filename string) error {
 	dir := filepath.Dir(filename)
 	file := filepath.Base(filename)
+	ext := filepath.Ext(filename)
+	sortSupportExtsPriority(ext)
 	Viper.AddConfigPath(dir)
-	Viper.SetConfigName(strings.TrimSuffix(file, filepath.Ext(filename)))
+	Viper.SetConfigName(strings.TrimSuffix(file, ext))
 	return Viper.ReadInConfig()
+}
+
+func sortSupportExtsPriority(first string) {
+	first = strings.Trim(first, ".")
+	if first == "" {
+		return
+	}
+	var exts = []string{first}
+	for _, ext := range viper.SupportedExts {
+		switch ext {
+		case first:
+		default:
+			exts = append(exts, ext)
+		}
+	}
+	viper.SupportedExts = exts
 }
 
 func WatchChange(funcs ...func()) {
