@@ -21,6 +21,7 @@ func MustLoad(filename string) {
 	}
 }
 
+// 只支持 JSON, TOML, YAML后缀
 func Load(filename string) error {
 	dir := filepath.Dir(filename)
 	file := filepath.Base(filename)
