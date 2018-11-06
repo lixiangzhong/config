@@ -5,7 +5,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-sql-driver/mysql"
 	"github.com/lixiangzhong/cast"
-	"github.com/spf13/viper"
+	"github.com/lixiangzhong/viper"
 	"path/filepath"
 	"strings"
 	"time"
@@ -21,7 +21,7 @@ func MustLoad(filename string) {
 	}
 }
 
-// 只支持 JSON, TOML, YAML后缀
+// 支持 JSON, TOML, YAML, INI后缀
 func Load(filename string) error {
 	dir := filepath.Dir(filename)
 	file := filepath.Base(filename)
