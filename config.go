@@ -179,7 +179,7 @@ var validUnits = []struct {
 // Returns the parsed size in bytes, or -1 if cannot parse
 func parseSize(sizeStr string) int64 {
 	sizeStr = strings.ToUpper(sizeStr)
-
+	sizeStr = strings.TrimSuffix(sizeStr, "B")
 	for _, unit := range validUnits {
 		if strings.HasSuffix(sizeStr, unit.symbol) {
 			size, err := strconv.ParseInt(sizeStr[0:len(sizeStr)-len(unit.symbol)], 10, 64)
