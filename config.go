@@ -2,13 +2,15 @@ package config
 
 import (
 	"fmt"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-sql-driver/mysql"
 	"github.com/lixiangzhong/cast"
 	"github.com/lixiangzhong/viper"
-	"path/filepath"
-	"strings"
-	"time"
 )
 
 var (
@@ -125,6 +127,10 @@ func StringMapStringSlice(key string) map[string][]string {
 	return Viper.GetStringMapStringSlice(key)
 }
 
+func Size(key string) int64 {
+	return parseSize(Viper.GetString(key))
+}
+
 func MySQLConfig(section string) *mysql.Config {
 	var cfg = mysql.NewConfig()
 	fields := []string{
@@ -153,4 +159,37 @@ func MySQLConfig(section string) *mysql.Config {
 	cfg.Net = "tcp"
 	cfg.ParseTime = true
 	return cfg
+}
+
+var validUnits = []struct {
+	symbol     string
+	multiplier int64
+}{
+	{"K", 1024},
+	{"M", 1024 * 1024},
+	{"G", 1024 * 1024 * 1024},
+	{"B", 1},
+	{"", 1}, // defaulting to "B"
+}
+
+// parseSize parses the given string as size limit
+// Size are positive numbers followed by a unit (case insensitive)
+// Allowed units: "B" (bytes), "KB" (kilo), "MB" (mega), "GB" (giga)
+// If the unit is omitted, "b" is assumed
+// Returns the parsed size in bytes, or -1 if cannot parse
+func parseSize(sizeStr string) int64 {
+	sizeStr = strings.ToUpper(sizeStr)
+
+	for _, unit := range validUnits {
+		if strings.HasSuffix(sizeStr, unit.symbol) {
+			size, err := strconv.ParseInt(sizeStr[0:len(sizeStr)-len(unit.symbol)], 10, 64)
+			if err != nil {
+				return -1
+			}
+			return size * unit.multiplier
+		}
+	}
+
+	// Unreachable code
+	return -1
 }
