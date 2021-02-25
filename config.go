@@ -59,6 +59,10 @@ func WatchChange(funcs ...func()) {
 	})
 }
 
+func Save() error {
+	return Viper.WriteConfig()
+}
+
 func SetDefault(key string, value interface{}) {
 	Viper.SetDefault(key, value)
 }
